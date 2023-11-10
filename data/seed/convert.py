@@ -1,6 +1,11 @@
 import statistics as sts
 
-from rex.utils.io import dump_jsonlines, load_jsonlines
+import os
+import sys
+
+sys.path.append(os.getcwd())
+
+from src.utils.io import dump_jsonlines, load_jsonlines
 
 
 def load_tree_data(
