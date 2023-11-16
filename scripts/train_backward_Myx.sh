@@ -3,8 +3,8 @@
 num_nodes=1
 num_gpu_per_node=8
 
-bsz=8
-output_dir="/home/ubuntu/sachira/Humback/outputs/backward_model_on_seed_data_scheduled"
+bsz=32
+output_dir="/dev/shm/Humpback/outputs/backward_model_on_seed_data_scheduled"
 
 mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
@@ -15,7 +15,7 @@ python -m torch.distributed.run \
     -m src.core.train_flash_attn \
         --reverse \
         --deepspeed conf/ds_zero2default.json \
-        --model_name_or_path "meta-llama/Llama-2-7b-hf" \
+        --model_name_or_path "mistralai/Mistral-7B-v0.1" \
         --data_path "data/seed/seed.jsonl" \
         --per_device_train_batch_size ${bsz_per_dev} \
         --per_device_eval_batch_size ${bsz_per_dev} \
