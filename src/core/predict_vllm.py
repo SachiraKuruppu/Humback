@@ -1,3 +1,9 @@
+
+import os
+import sys
+
+sys.path.append(os.getcwd())
+
 import argparse
 
 from vllm import LLM, SamplingParams
