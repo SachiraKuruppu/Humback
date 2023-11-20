@@ -10,19 +10,24 @@ bsz=32
 # max_steps=765  # 21,301 curated instances (score=5) + 3,200 seed data for M1 training
 # data_path="data/curated/m1.jsonl"
 # output_dir="/dev/shm/tzhu/Humback/models/m1_with_diff_sys_prompt"
+
+num_nodes=1
+num_gpu_per_node=8
+bsz=32
+
 max_steps=2400
-data_path=data/curated/m1_v2.jsonl
-output_dir="/dev/shm/tzhu/Humback/models/m1_strict_score_matching_2400steps"
+data_path=data/seed/seed.jsonl
+output_dir="/dev/shm/Humpback/models/m1_strict_score_matching_2400steps"
 
 mkdir -p $output_dir
 bsz_per_dev=$(echo "${bsz} / ${num_nodes} / ${num_gpu_per_node}" | bc)
 
-torchrun \
+python -m torch.distributed.run \
     --nnodes ${num_nodes} \
     --nproc_per_node ${num_gpu_per_node} \
     -m src.core.train_flash_attn \
         --deepspeed conf/ds_zero2default.json \
-        --model_name_or_path /home/zhutong/Llama-2-7b-hf \
+        --model_name_or_path "mistralai/Mistral-7B-v0.1" \
         --data_path ${data_path} \
         --per_device_train_batch_size ${bsz_per_dev} \
         --per_device_eval_batch_size ${bsz_per_dev} \
