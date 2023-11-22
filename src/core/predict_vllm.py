@@ -13,16 +13,20 @@ from src.utils.io import dump_jsonlines, load_jsonlines
 
 
 def main(args):
+    print("LLM")
     llm = LLM(
         args.model_path,
         tensor_parallel_size=args.tensor_parallel_size,
         dtype=args.dtype,
     )
+    print("Sampling Params")
     sampling_params = SamplingParams(
         temperature=args.temperature,
         top_p=args.top_p,
         max_tokens=args.max_new_tokens,
     )
+
+    print("Loading data")
 
     raw_data = load_jsonlines(args.data_filepath)
     data = InferenceDataset(
@@ -31,6 +35,8 @@ def main(args):
         reverse=args.reverse,
     )
     prompts = data.get_all()
+
+    print("Generating")
 
     # 00:25 / 100 prompts on one GPU
     results = llm.generate(prompts, use_tqdm=True, sampling_params=sampling_params)
